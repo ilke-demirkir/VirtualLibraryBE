@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using VirtualLibraryAPI.Models;
 using VirtualLibraryAPI.Services;
 using VirtualLibraryAPI.Data;
@@ -40,8 +41,12 @@ namespace VirtualLibraryAPI.Controllers{
             var book = _service.GetById(id);
             if (book is null) return NotFound();
             updatedBook.Id = id;
-            _service.Update(updatedBook);
-            return NoContent();
+            book.Name = updatedBook.Name;
+            book.Year = updatedBook.Year;
+            book.Fav = updatedBook.Fav;
+            
+            _context.SaveChanges();
+            return Ok(updatedBook);
         }
 
         [HttpDelete("{id}")]
