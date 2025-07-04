@@ -30,9 +30,10 @@ public class GlobalExceptionMiddleware
             var response = new
             {
                 error = ex.Message,
+                inner = _env.IsDevelopment() ? ex.InnerException?.Message : ex.Message,
                 stackTrace = _env.IsDevelopment() ? ex.StackTrace : null
             };
-            await context.Response.WriteAsync(JsonSerializer.Serialize(ex));
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
     }
 }
