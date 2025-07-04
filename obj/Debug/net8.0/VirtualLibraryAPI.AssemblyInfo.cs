@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VirtualLibraryAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+10c032efa3e23da067a02bcd695f0766686793a7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ced00afa7cda294d2d2c56bc1c36ccb1e521daa3")]
 [assembly: System.Reflection.AssemblyProductAttribute("VirtualLibraryAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VirtualLibraryAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

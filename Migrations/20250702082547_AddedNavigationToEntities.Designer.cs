@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VirtualLibraryAPI.Data;
@@ -12,9 +13,11 @@ using VirtualLibraryAPI.Data;
 namespace VirtualLibraryAPI.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    partial class LibraryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250702082547_AddedNavigationToEntities")]
+    partial class AddedNavigationToEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,17 +52,11 @@ namespace VirtualLibraryAPI.Migrations
                     b.Property<bool>("Fav")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("Featured")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Image")
                         .HasColumnType("text");
 
                     b.Property<bool?>("IsBestseller")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("Isbn")
-                        .HasColumnType("text");
 
                     b.Property<string>("Language")
                         .HasColumnType("text");
@@ -74,8 +71,8 @@ namespace VirtualLibraryAPI.Migrations
                     b.Property<decimal?>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<int?>("PublishYear")
-                        .HasColumnType("integer");
+                    b.Property<DateTime?>("PublishDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Publisher")
                         .HasColumnType("text");
@@ -198,8 +195,8 @@ namespace VirtualLibraryAPI.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("integer");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -219,15 +216,6 @@ namespace VirtualLibraryAPI.Migrations
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("AvatarUrl")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Bio")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()

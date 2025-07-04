@@ -185,7 +185,21 @@ namespace VirtualLibraryAPI.Controllers
             var books = await _bookService.FindByTitleAsync(title);
             return Ok(books);
         }
-        
-        
+
+        [HttpGet("popular")]
+        public async Task<ActionResult<IEnumerable<CategoryCountDto>>> GetPopular(int limit = 6)
+        {
+            var popular = await _context.Books
+                .GroupBy(b => b.Category)
+                .Select(b => new CategoryCountDto()
+                {
+                    Category = b.Key,
+                    Count = b.Count()
+                })
+                .OrderByDescending(c  => c.Count)
+                .Take(limit)
+                .ToListAsync();
+            return Ok(popular);
+        }
     }
 }

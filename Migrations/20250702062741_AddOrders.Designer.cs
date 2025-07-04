@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VirtualLibraryAPI.Data;
@@ -12,9 +13,11 @@ using VirtualLibraryAPI.Data;
 namespace VirtualLibraryAPI.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    partial class LibraryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250702062741_AddOrders")]
+    partial class AddOrders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,9 +37,6 @@ namespace VirtualLibraryAPI.Migrations
                     b.Property<string>("Author")
                         .HasColumnType("text");
 
-                    b.Property<decimal?>("AverageRating")
-                        .HasColumnType("numeric");
-
                     b.Property<string>("Category")
                         .HasColumnType("text");
 
@@ -49,17 +49,11 @@ namespace VirtualLibraryAPI.Migrations
                     b.Property<bool>("Fav")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("Featured")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Image")
                         .HasColumnType("text");
 
                     b.Property<bool?>("IsBestseller")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("Isbn")
-                        .HasColumnType("text");
 
                     b.Property<string>("Language")
                         .HasColumnType("text");
@@ -74,11 +68,17 @@ namespace VirtualLibraryAPI.Migrations
                     b.Property<decimal?>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<int?>("PublishYear")
-                        .HasColumnType("integer");
+                    b.Property<DateTime?>("PublishDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Publisher")
                         .HasColumnType("text");
+
+                    b.Property<decimal?>("Rating")
+                        .HasColumnType("numeric");
+
+                    b.PrimitiveCollection<List<string>>("Reviews")
+                        .HasColumnType("text[]");
 
                     b.Property<int?>("Stock")
                         .HasColumnType("integer");
@@ -108,14 +108,12 @@ namespace VirtualLibraryAPI.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BookId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("CartItems");
                 });
@@ -134,12 +132,10 @@ namespace VirtualLibraryAPI.Migrations
                     b.Property<decimal>("Total")
                         .HasColumnType("numeric");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Orders");
                 });
@@ -155,9 +151,6 @@ namespace VirtualLibraryAPI.Migrations
                     b.Property<int>("BookId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("CartItemId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("OrderId")
                         .HasColumnType("integer");
 
@@ -171,45 +164,9 @@ namespace VirtualLibraryAPI.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.HasIndex("CartItemId");
-
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrderItems");
-                });
-
-            modelBuilder.Entity("VirtualLibraryAPI.Entities.Review", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BookId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookId");
-
-                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("VirtualLibraryAPI.Entities.User", b =>
@@ -219,15 +176,6 @@ namespace VirtualLibraryAPI.Migrations
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("AvatarUrl")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Bio")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -252,44 +200,21 @@ namespace VirtualLibraryAPI.Migrations
             modelBuilder.Entity("VirtualLibraryAPI.Entities.CartItem", b =>
                 {
                     b.HasOne("VirtualLibraryAPI.Entities.Book", "Book")
-                        .WithMany("CartItems")
+                        .WithMany()
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("VirtualLibraryAPI.Entities.User", "User")
-                        .WithMany("CartItems")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Book");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("VirtualLibraryAPI.Entities.Order", b =>
-                {
-                    b.HasOne("VirtualLibraryAPI.Entities.User", "User")
-                        .WithMany("Orders")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("VirtualLibraryAPI.Entities.OrderItem", b =>
                 {
                     b.HasOne("VirtualLibraryAPI.Entities.Book", "Book")
-                        .WithMany("OrderItems")
+                        .WithMany()
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("VirtualLibraryAPI.Entities.CartItem", null)
-                        .WithMany("Items")
-                        .HasForeignKey("CartItemId");
 
                     b.HasOne("VirtualLibraryAPI.Entities.Order", "Order")
                         .WithMany("Items")
@@ -302,41 +227,9 @@ namespace VirtualLibraryAPI.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("VirtualLibraryAPI.Entities.Review", b =>
-                {
-                    b.HasOne("VirtualLibraryAPI.Entities.Book", "Book")
-                        .WithMany("Reviews")
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Book");
-                });
-
-            modelBuilder.Entity("VirtualLibraryAPI.Entities.Book", b =>
-                {
-                    b.Navigation("CartItems");
-
-                    b.Navigation("OrderItems");
-
-                    b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("VirtualLibraryAPI.Entities.CartItem", b =>
-                {
-                    b.Navigation("Items");
-                });
-
             modelBuilder.Entity("VirtualLibraryAPI.Entities.Order", b =>
                 {
                     b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("VirtualLibraryAPI.Entities.User", b =>
-                {
-                    b.Navigation("CartItems");
-
-                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }
