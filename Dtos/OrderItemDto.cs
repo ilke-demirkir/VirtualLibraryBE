@@ -1,3 +1,3 @@
 namespace VirtualLibraryAPI.Dtos;
-public record OrderItemDto(int OrderId,string BookName, int Quantity, decimal UnitPrice);
-public record OrderDetailDto(int Id, DateTime CreatedAt, decimal Total, List<OrderItemDto> Items);
+public record OrderItemDto(long OrderId,string BookName, int Quantity, decimal UnitPrice);
+public record OrderDetailDto(long Id, DateTime CreatedAt, decimal Total, List<OrderItemDto> Items);

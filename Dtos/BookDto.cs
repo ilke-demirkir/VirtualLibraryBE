@@ -1,9 +1,11 @@
+using VirtualLibraryAPI.Entities;
+
 namespace VirtualLibraryAPI.Dtos;
 
 // Dtos/BookDto.cs
 public class BookDto
 {
-    public int      Id {get; set;}
+    public long      Id {get; set;}
     public string   Name  {get; set;}
     public int      Year  {get; set;}
     public bool     Fav {get; set;}

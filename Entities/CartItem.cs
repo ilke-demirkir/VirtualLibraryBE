@@ -4,9 +4,9 @@ namespace VirtualLibraryAPI.Entities;
 
 public class CartItem
 {
-    public int Id {get; set;}
+    public long Id {get; set;}
     public long UserId {get; set;}
-    public int BookId {get; set;}
+    public long BookId {get; set;}
     public int Quantity {get; set;}
     
     public Book Book {get; set;} = null!;

@@ -23,7 +23,17 @@ public class UserController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto dto)
     {
+        if (_libraryDbContext.Users.Any(u => u.Username == dto.Username))
+        {
+            return BadRequest("Username already exists");
+        }
+
+        if (_libraryDbContext.Users.Any(u => u.Email == dto.Email))
+        {
+            return BadRequest("Email already exists");
+        }
         var result = await _userService.RegisterAsync(dto);
+
         return Ok(result);
     }
 
@@ -42,16 +52,10 @@ public class UserController : ControllerBase
     }
 
     [HttpPatch("{id:long}")]
-    public async Task<IActionResult> PatchUser(int id, [FromBody] EditUserDto dto)
+    public async Task<IActionResult> PatchUser(long id, [FromBody] EditUserDto dto)
     {
-        var user = await _libraryDbContext.Users.FindAsync(id);
-        if (user == null) return NotFound();
-        
-        if(dto.AvatarUrl != null)
-            user.AvatarUrl = dto.AvatarUrl;
-        if (dto.Bio != null)
-            user.Bio = dto.Bio;
-        
+        var user = await _userService.EditUserAsync(id, dto);
+            
         await _libraryDbContext.SaveChangesAsync();
         return Ok(user);
     }

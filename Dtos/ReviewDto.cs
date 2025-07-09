@@ -1,7 +1,7 @@
 namespace VirtualLibraryAPI.Dtos;
 
 public record ReviewDto(
-    int      Id,
+    long      Id,
     long     UserId,
     string   UserName,
     int      Rating,

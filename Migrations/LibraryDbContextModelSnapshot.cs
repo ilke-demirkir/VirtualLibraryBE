@@ -25,11 +25,11 @@ namespace VirtualLibraryAPI.Migrations
 
             modelBuilder.Entity("VirtualLibraryAPI.Entities.Book", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Author")
                         .HasColumnType("text");
@@ -96,14 +96,14 @@ namespace VirtualLibraryAPI.Migrations
 
             modelBuilder.Entity("VirtualLibraryAPI.Entities.CartItem", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<int>("BookId")
-                        .HasColumnType("integer");
+                    b.Property<long>("BookId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
@@ -120,13 +120,49 @@ namespace VirtualLibraryAPI.Migrations
                     b.ToTable("CartItems");
                 });
 
-            modelBuilder.Entity("VirtualLibraryAPI.Entities.Order", b =>
+            modelBuilder.Entity("VirtualLibraryAPI.Entities.Notification", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("BookId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Type")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("VirtualLibraryAPI.Entities.Order", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -146,20 +182,20 @@ namespace VirtualLibraryAPI.Migrations
 
             modelBuilder.Entity("VirtualLibraryAPI.Entities.OrderItem", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<int>("BookId")
-                        .HasColumnType("integer");
+                    b.Property<long>("BookId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int?>("CartItemId")
-                        .HasColumnType("integer");
+                    b.Property<long?>("CartItemId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("OrderId")
-                        .HasColumnType("integer");
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
@@ -180,14 +216,14 @@ namespace VirtualLibraryAPI.Migrations
 
             modelBuilder.Entity("VirtualLibraryAPI.Entities.Review", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<int>("BookId")
-                        .HasColumnType("integer");
+                    b.Property<long>("BookId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Comment")
                         .HasColumnType("text");
@@ -249,6 +285,32 @@ namespace VirtualLibraryAPI.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("VirtualLibraryAPI.Entities.Wishlist", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BookId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Wishlists");
+                });
+
             modelBuilder.Entity("VirtualLibraryAPI.Entities.CartItem", b =>
                 {
                     b.HasOne("VirtualLibraryAPI.Entities.Book", "Book")
@@ -259,6 +321,23 @@ namespace VirtualLibraryAPI.Migrations
 
                     b.HasOne("VirtualLibraryAPI.Entities.User", "User")
                         .WithMany("CartItems")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("VirtualLibraryAPI.Entities.Notification", b =>
+                {
+                    b.HasOne("VirtualLibraryAPI.Entities.Book", "Book")
+                        .WithMany("Notifications")
+                        .HasForeignKey("BookId");
+
+                    b.HasOne("VirtualLibraryAPI.Entities.User", "User")
+                        .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -313,13 +392,37 @@ namespace VirtualLibraryAPI.Migrations
                     b.Navigation("Book");
                 });
 
+            modelBuilder.Entity("VirtualLibraryAPI.Entities.Wishlist", b =>
+                {
+                    b.HasOne("VirtualLibraryAPI.Entities.Book", "Book")
+                        .WithMany("Wishlists")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_Wishlists_Books_BookId");
+
+                    b.HasOne("VirtualLibraryAPI.Entities.User", "User")
+                        .WithMany("Wishlists")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("VirtualLibraryAPI.Entities.Book", b =>
                 {
                     b.Navigation("CartItems");
 
+                    b.Navigation("Notifications");
+
                     b.Navigation("OrderItems");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("Wishlists");
                 });
 
             modelBuilder.Entity("VirtualLibraryAPI.Entities.CartItem", b =>
@@ -336,7 +439,11 @@ namespace VirtualLibraryAPI.Migrations
                 {
                     b.Navigation("CartItems");
 
+                    b.Navigation("Notifications");
+
                     b.Navigation("Orders");
+
+                    b.Navigation("Wishlists");
                 });
 #pragma warning restore 612, 618
         }

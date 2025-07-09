@@ -1,14 +1,16 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using VirtualLibraryAPI.Entities;
 using VirtualLibraryAPI.Data;
-
+using VirtualLibraryAPI.NotifHub;
 namespace VirtualLibraryAPI.Services
 {
     public class BookService
     {
         private readonly LibraryDbContext _context;
         private readonly GoogleBooksService _googleBooksService;
+        private readonly IHubContext<NotificationHub> _notificationHub;
 
         public BookService(LibraryDbContext context, GoogleBooksService googleBooksService)
         {
@@ -38,7 +40,7 @@ namespace VirtualLibraryAPI.Services
             _context.SaveChanges();
         }
         
-        public void Delete(int id)
+        public void Delete(long id)
         {
             var book = _context.Books.Find(id);
             if (book != null)

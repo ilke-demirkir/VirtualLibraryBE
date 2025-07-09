@@ -1,8 +1,8 @@
 namespace VirtualLibraryAPI.Dtos;
 
 public record CartItemDto (
-    int Id, 
-    int BookId, 
+    long Id, 
+    long BookId, 
     string BookName, 
     decimal BookPrice, 
     int Quantity

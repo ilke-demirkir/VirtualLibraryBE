@@ -4,7 +4,7 @@ namespace VirtualLibraryAPI.Entities;
 
 public class Order
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     public long UserId { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public decimal Total { get; set; }

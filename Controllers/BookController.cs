@@ -25,12 +25,14 @@ namespace VirtualLibraryAPI.Controllers
         private readonly LibraryDbContext _context;
         private readonly IMapper           _mapper;
         private readonly BookService _bookService;
+        private readonly NotificationService _notificationService;
 
-        public BooksController(LibraryDbContext context, IMapper mapper, BookService bookService)
+        public BooksController(LibraryDbContext context, IMapper mapper, BookService bookService, NotificationService notificationService)
         {
             _context = context;
             _mapper  = mapper;
             _bookService = bookService;
+            _notificationService = notificationService;
         }
 
         // GET /api/books
@@ -95,7 +97,7 @@ namespace VirtualLibraryAPI.Controllers
 
         // GET /api/books/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookDto>> GetById(int id)
+        public async Task<ActionResult<BookDto>> GetById(long id)
         {
             var dto = await _context.Books
                 .AsNoTracking()
@@ -120,7 +122,7 @@ namespace VirtualLibraryAPI.Controllers
 
         // PUT /api/books/{id}  (Admin only)
         [HttpPut("{id}"), Authorize(Roles = "Admin")]
-        public async Task<ActionResult<BookDto>> Update(int id, [FromBody] BookDto input)
+        public async Task<ActionResult<BookDto>> Update(long id, [FromBody] BookDto input)
         {
             if (id != input.Id)
                 return BadRequest("ID in URL and payload must match.");
@@ -128,6 +130,18 @@ namespace VirtualLibraryAPI.Controllers
             var book = await _context.Books.FindAsync(id);
             if (book is null)
                 return NotFound();
+            if (book.Stock == 0 && input.Stock > 0)
+            {
+                await _notificationService.NotifyUsersAsync(input.Id,
+                    NotificationType.WishlistRestock,
+                    $"“{input.Name}” is back in stock!");
+            }
+
+            if (book.Discount < input.Discount)
+            {   
+                await _notificationService.NotifyUsersAsync(input.Id, NotificationType.WishlistDiscount, $"“{input.Name}” now {input.Discount}% off!");
+
+            }
 
             _mapper.Map(input, book);
             book.LastUpdate = DateTime.UtcNow;
@@ -152,7 +166,7 @@ namespace VirtualLibraryAPI.Controllers
 
         // PATCH /api/books/{id}  (toggle favorite)
         [HttpPatch("{id}")]
-        public async Task<ActionResult<BookDto>> UpdateFavorite(int id, [FromBody] FavoriteDto dto)
+        public async Task<ActionResult<BookDto>> UpdateFavorite(long id, [FromBody] FavoriteDto dto)
         {
             var book = await _context.Books.FindAsync(id);
             if (book is null)

@@ -24,15 +24,21 @@ public class GlobalExceptionMiddleware
         catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
-            
+
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             context.Response.ContentType = "application/json";
+
+            var isDev = _env.IsDevelopment();
+
             var response = new
             {
-                error = ex.Message,
-                inner = _env.IsDevelopment() ? ex.InnerException?.Message : ex.Message,
-                stackTrace = _env.IsDevelopment() ? ex.StackTrace : null
+                message = isDev ? ex.Message : "An unexpected error occured",
+                code = "SERVER_ERROR",
+                stackTrace = isDev ? ex.StackTrace : null,
+                inner = isDev ? ex.InnerException?.Message : null
             };
+               
+
             await context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
     }

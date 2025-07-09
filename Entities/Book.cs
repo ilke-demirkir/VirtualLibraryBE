@@ -4,7 +4,7 @@ namespace VirtualLibraryAPI.Entities;
 
 public class Book
 {
-    public int Id {get; set;}
+    public long Id {get; set;}
     public string Name { get; set;} = string.Empty;
     public int Year{get; set;}
     public bool Fav {get; set;}
@@ -38,4 +38,8 @@ public class Book
     public List<OrderItem>   OrderItems  { get; set; } = new();
     
     public bool Featured {get; set;}
+    
+    public List<Wishlist> Wishlists {get; set;} = new List<Wishlist>();
+    public List<Notification> Notifications {get; set;} = new();
+    
 }

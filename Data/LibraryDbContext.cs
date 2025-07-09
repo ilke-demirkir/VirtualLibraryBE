@@ -17,6 +17,8 @@ namespace VirtualLibraryAPI.Data
         public DbSet<Order>      Orders      { get; set; }
         public DbSet<OrderItem>  OrderItems  { get; set; }
         public DbSet<Review>     Reviews     { get; set; }
+        public DbSet<Wishlist>    Wishlists   { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -51,6 +53,31 @@ namespace VirtualLibraryAPI.Data
                 .HasOne(oi => oi.Book)
                 .WithMany(b => b.OrderItems)
                 .HasForeignKey(oi => oi.BookId);
+            
+            builder.Entity<Wishlist>()
+                .HasOne(w => w.Book)
+                .WithMany(b => b.Wishlists)
+                .HasForeignKey(w => w.BookId)        // ← explicitly map your scalar
+                .HasConstraintName("FK_Wishlists_Books_BookId")
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.Entity<Wishlist>()
+                .HasOne(w => w.User)
+                .WithMany(u => u.Wishlists)
+                .HasForeignKey(w => w.UserId)
+                .OnDelete(DeleteBehavior.Cascade); 
+            
+            builder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.UserId);
+
+            builder.Entity<Notification>()
+                .HasOne(n => n.Book)
+                .WithMany(b => b.Notifications)
+                .HasForeignKey(n => n.BookId);
+
+        
         }
     }
 

@@ -1,3 +1,3 @@
 namespace VirtualLibraryAPI.Dtos;
 
-public record OrderSummaryDto(int Id, DateTime CreatedAt, decimal Total);
+public record OrderSummaryDto(long Id, DateTime CreatedAt, decimal Total);

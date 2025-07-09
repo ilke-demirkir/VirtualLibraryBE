@@ -12,6 +12,8 @@ using Microsoft.Extensions.Options;
 using Options = Iyzipay.Options;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using VirtualLibraryAPI.NotifHub;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
@@ -28,7 +30,8 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<BookService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<ReviewService>();
-
+builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<WishlistService>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddDbContext<LibraryDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddCors(options =>
@@ -38,6 +41,9 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
+builder.Services.AddSignalR();
+
+
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
@@ -84,7 +90,7 @@ builder.Services.AddHttpClient<GoogleBooksService>(client =>
 var app = builder.Build();
 app.UseCors("AllowFrontend");
 // Configure the HTTP request pipeline.
-
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 using (var scope = app.Services.CreateScope())
 {
